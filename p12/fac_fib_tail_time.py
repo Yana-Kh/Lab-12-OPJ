@@ -44,18 +44,17 @@ def factorial(n, acc=1):
     return factorial(n - 1, n * acc)
 
 
-def fib(n):
-    if n == 0 or n == 1:
-        return n
+def fib(i, current=0, next=1):
+    if i == 0:
+        return current
     else:
-        return fib(n - 2) + fib(n - 1)
+        return fib(i - 1, next, current + next)
 
 
 @tail_call_optimized
 def factorial_o(n, acc=1):
     if n == 0:
         return acc
-
     return factorial(n - 1, n * acc)
 
 
