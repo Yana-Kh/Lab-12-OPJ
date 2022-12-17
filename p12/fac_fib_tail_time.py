@@ -9,20 +9,17 @@ import sys
 import timeit
 
 
-class TailRecurseException:
+class TailRecurseException(Exception):
     def __init__(self, args, kwargs):
         self.args = args
         self.kwargs = kwargs
 
 
 def tail_call_optimized(g):
-    """
-Эта программа показыает работу декоратора, который производит оптимизацию
-хвостового вызова. Он делает это, вызывая исключение, если оно является его
-прародителем, и перехватывает исключения, чтобы подделать оптимизацию хвоста.
-
-Эта функция не работает, если функция декоратора не использует хвостовой вызов.
-"""
+    # Эта программа показывает работу декоратора, который производит оптимизацию
+    # хвостового вызова. Он делает это, вызывая исключение, если оно является его
+    # прародителем, и перехватывает исключения, чтобы подделать оптимизацию хвоста.
+    # Эта функция не работает, если функция декоратора не использует хвостовой вызов.
 
     def func(*args, **kwargs):
         f = sys._getframe()
@@ -35,37 +32,35 @@ def tail_call_optimized(g):
                 except TailRecurseException as e:
                     args = e.args
                     kwargs = e.kwargs
+
     func.__doc__ = g.__doc__
     return func
 
 
+
 def factorial(n, acc=1):
-    "calculate a factorial"
     if n == 0:
         return acc
+    return factorial(n - 1, n * acc)
 
-    return factorial(n-1, n*acc)
 
-
-def fib(i, current = 0, next = 1):
-    if i == 0:
-        return current
+def fib(n):
+    if n == 0 or n == 1:
+        return n
     else:
-        return fib(i - 1, next, current + next)
+        return fib(n - 2) + fib(n - 1)
 
 
-# o - оптимизированный
-#@tail_call_optimized
+@tail_call_optimized
 def factorial_o(n, acc=1):
-    "calculate a factorial"
     if n == 0:
         return acc
 
-    return factorial_o(n-1, n*acc)
+    return factorial(n - 1, n * acc)
 
 
-#@tail_call_optimized
-def fib_o(i, current = 0, next = 1):
+@tail_call_optimized
+def fib_o(i, current=0, next=1):
     if i == 0:
         return current
     else:
@@ -84,12 +79,12 @@ n = 100
 
 setup_code_3 = """
 from __main__ import fib
-n = 100
+n = 10
 """
 
 setup_code_4 = """
 from __main__ import fib_o
-n = 100
+n = 10
 """
 
 if __name__ == '__main__':
